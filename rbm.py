@@ -36,6 +36,7 @@ def rbm(dataset, num_hidden, learning_rate, max_epochs, batch_size):
     weights = 0.1 * np.random.randn(num_visible, num_hidden)
     v_bias = np.zeros((1, num_visible))
     h_bias = -4.0 * np.ones((1, num_hidden))
+    #h_bias = np.zeros((1, num_hidden))
 
     # Initialize the weight incremental update matrices
     w_inc = np.zeros((num_visible, num_hidden))
@@ -107,9 +108,30 @@ def rbm(dataset, num_hidden, learning_rate, max_epochs, batch_size):
 
 
 def logistic(x, w, b):
+    """A sigmoid relationship for RBM activation function.
+
+    Args:
+        x - A numpy array of states.
+        w - A numpy array of weights.
+        b - A numpy array of biases.
+
+    Returns:
+        A numpy array after the logistic function is applied.
+    """
+
     xw = np.dot(x, w)
-    replicated_b = np.tile(b, (x.shape[0], 1))
+    # replicated_b = np.tile(b, (x.shape[0], 1))
     return 1.0 / (1 + np.exp(- xw - b))
+
+def lookup(x, w, b):
+    """A stochastic neuron activation function model.
+
+    Args:
+        x - A numpy array of states.
+        w - A numpy array of weights.
+        b - A numpy array of biases.
+    """
+    print('LOOKUP HERE.')
 
 if __name__ == '__main__':
     if len(sys.argv) == 6:
