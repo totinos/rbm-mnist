@@ -112,18 +112,19 @@ def logistic(x, w, b):
     return 1.0 / (1 + np.exp(- xw - b))
 
 if __name__ == '__main__':
-    if len(sys.argv) == 5:
+    if len(sys.argv) == 6:
         num_examples = int(sys.argv[1])
         num_hidden = int(sys.argv[2])
         max_epochs = int(sys.argv[3])
-        learning_rate = int(sys.argv[4])
+        learning_rate = float(sys.argv[4])
+        batch_size = int(sys.argv[5])
 
         images, labels = mnist.load_images(num_examples, True)
-        w, a, b = rbm(images, num_hidden, learning_rate, max_epochs, batch_size=100)
+        w, a, b = rbm(images, num_hidden, learning_rate, max_epochs, batch_size)
     elif len(sys.argv) == 1:
         print('Training RBM on 1000 examples over 50 epochs with learning rate of 0.1 and 100 hidden neurons.')
         images, labels = mnist.load_images(1000, True)
         w, a, b = rbm(images, 100, 0.1, 50, batch_size=100)
     else:
-        print('Usage: python rbm.py [num_examples] [num_hidden] [max_epochs] [learning_rate]')
+        print('Usage: python rbm.py [num_examples] [num_hidden] [max_epochs] [learning_rate] [batch_size]')
         exit(1)
