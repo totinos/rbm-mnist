@@ -6,6 +6,8 @@ import os
 
 import matplotlib.pyplot as plt
 
+
+
 def load_images(num_digits=0, training=True):
     """Load MNIST digit images and labels into local memory.
 
@@ -57,7 +59,8 @@ def load_images(num_digits=0, training=True):
 
 
 
-def filter_dataset(digit, images, labels):
+
+def get_instances(digit, images, labels):
     """Get an array of images of the specified digit.
 
     Args:
@@ -74,6 +77,25 @@ def filter_dataset(digit, images, labels):
         if labels[i] == digit:
             indices.append(i)
     return images[indices]
+
+
+
+
+def exclude_instances(digit, images, labels):
+    """Get an array of images of all digits excepting the one specified.
+
+    Args:
+        digit - A label describing the digit to be excluded from the dataset.
+        images - A numpy array of dim. [num_digits] x [pixels]
+        labels - A numpy array of dim. [num_digits] x [1].
+    """
+
+    indices = []
+    for i in range(len(labels)):
+        if labels[i] != digit:
+            indices.append(i)
+    return images[indices]
+
 
 
 
