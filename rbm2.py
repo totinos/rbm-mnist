@@ -4,6 +4,7 @@ import sys
 import mnist
 
 from time import time
+import matplotlib.pyplot as plt
 
 class RBM:
 
@@ -20,11 +21,13 @@ class RBM:
         sys.stdout.flush()
 
         self.dataset = dataset
-
+        
         self.num_examples = self.dataset.shape[0]
         self.num_visible = self.dataset.shape[1]
         self.num_hidden = num_hidden
         
+        self.reconstructed = np.zeros((self.num_examples, self.num_visible))
+
         self.weights = 0.1 * np.random.randn(self.num_visible, num_hidden)
         self.v_bias = np.zeros((1, self.num_visible))
         self.h_bias = -4.0 * np.ones((1, num_hidden))
@@ -37,6 +40,8 @@ class RBM:
 
         print('Done!')
         return
+
+
 
     def train(self, learning_rate=0.1, max_epochs=50, batch_size=100):
         """Train a RBM where the input is binary or real over interval [0,1].
@@ -88,9 +93,17 @@ class RBM:
 
                 error += np.sum((data - neg_data) ** 2)
 
+                ############ RECONSTRUCT ###########
+                self.reconstructed[start:end] = neg_data
+
             #time_elapsed = time() - start_time
             if epoch % 5 == 0:
                 print('Epoch %4d -> Reconstruction error: %0.2f.' % (epoch, error))
+                if not os.path.exists('reconstructed'):
+                    os.makedirs('reconstructed')
+                filename = 'reconstructed/reconstructed{}.png'.format(epoch)
+                self.save_reconstructed_image(filename)
+
         time_elapsed = time() - start_time
         print('Training completed.')
         print('Time elapsed (s): %0.2f' % time_elapsed)
@@ -108,6 +121,57 @@ class RBM:
         """Stochastic neuron activation function lookup table."""
         return
 
+
+
+
+    def save_reconstructed_image(self, filename):
+        """Saves an image representing the reconstructed data to disk.
+
+        Args:
+            filename - A location to save the image file.
+        """
+        print(filename)
+        return
+
+
+
+    def reconstruct_image(self, input_vector):
+        """Reconstructs the network's impression of the input image.
+
+        The hidden states are sampled after the inputs are introduced, and
+        then the visible states are sampled based on the propagation of the
+        hidden states backward through the network.
+
+        Args:
+            input_vector - A numpy array of dimension [num_inputs].
+        """
+
+        pos_hid_probs = self.act_func(input_vector, self.weights, self.h_bias)
+        pos_hid_states = pos_hid_probs > np.random.rand(1, self.num_hidden)
+        neg_data = self.act_func(pos_hid_states, self.weights.T, self.v_bias)
+        return neg_data
+
+
+
+    def save_weights(self, outfile='', title=''):
+        """Save image with pictoral representation of weight distributions.
+
+        Args:
+            outfile - The filename for the image to be saved.
+            title - The title for the image to be saved.
+        """
+
+        row = self.num_visible
+        col = self.num_hidden
+        # plt.imshow(self.weights, cmap='gray', aspect='auto', interpolation='none')
+        # plt.show()
+
+        # plt.imshow(self.reconstruct_image(self.dataset[0]).reshape((28,28)), cmap='gray', aspect='equal', interpolation='none')
+        # plt.show()
+
+        # plt.imshow(self.dataset[0].reshape((28,28)), cmap='gray', aspect='equal', interpolation='none')
+        # plt.show()
+        return
     
 
 if __name__ == '__main__':
@@ -123,6 +187,7 @@ if __name__ == '__main__':
 
         rbm = RBM(images, num_hidden, act_func)
         rbm.train(learning_rate, max_epochs, batch_size)
+        rbm.save_weights("", "")
 
     elif len(sys.argv) == 1:
         print('Training RBM on 1000 examples over 50 epochs with learning rate of 0.1 and 100 hidden neurons.')

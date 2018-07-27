@@ -8,9 +8,14 @@ import matplotlib.pyplot as plt
 
 def load_images(num_digits=0, training=True):
     """Load MNIST digit images and labels into local memory.
+
     Args:
         num_digits - Describes the number of images to load (0 means all)
         training - <True> loads training set, <False> loads test set
+
+    Returns:
+        images - A numpy array of dim. [num_digits] x [pixels].
+        labels - A numpy array of dim. [num_digits] x [1].
 
     The following files should be located in the relative folder images/
         - train-images-idx3-ubyte
@@ -33,10 +38,6 @@ def load_images(num_digits=0, training=True):
             num_digits = num_images
 
         pixels = int(rows * cols)
-        
-        print(num_digits)
-        print(pixels)
-
         data = array('B', f.read(int(pixels * num_digits)))
         images = np.zeros((num_digits, pixels), dtype=np.uint8)
 
@@ -54,14 +55,18 @@ def load_images(num_digits=0, training=True):
 
     return images, labels
 
+
+
 def filter_dataset(digit, images, labels):
     """Get an array of images of the specified digit.
 
     Args:
         digit - A label describing the digit for which to look.
+        images - A numpy array of dim. [num_digits] x [pixels].
+        labels - A numpy array of dim. [num_digits] x [1].
 
     Returns:
-        images - An array of all digits matching the given label.
+        images - A numpy array of all digits matching the given label.
     """
 
     indices = []
@@ -69,6 +74,8 @@ def filter_dataset(digit, images, labels):
         if labels[i] == digit:
             indices.append(i)
     return images[indices]
+
+
 
 def save_image(digit, filename):
     """Display a single image given by an array of pixel values
@@ -83,6 +90,8 @@ def save_image(digit, filename):
     plt.axis('off')
     plt.savefig(filename)
     return
+
+
 
 if __name__ == '__main__':
     images, labels = load_images(10, True)
