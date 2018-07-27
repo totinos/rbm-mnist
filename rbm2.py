@@ -96,12 +96,14 @@ class RBM:
                 ############ RECONSTRUCT ###########
                 self.reconstructed[start:end] = neg_data
 
+            # TODO ---> ADD programmable sampling frequency
+            # TODO ---> ADD a nice progress bar for convenience??
             #time_elapsed = time() - start_time
-            if epoch % 5 == 0:
+            if epoch % 10 == 0:
                 print('Epoch %4d -> Reconstruction error: %0.2f.' % (epoch, error))
                 if not os.path.exists('reconstructed'):
                     os.makedirs('reconstructed')
-                filename = 'reconstructed/reconstructed{}.png'.format(epoch)
+                filename = 'reconstructed/{:04}.png'.format(epoch)
                 self.save_reconstructed_image(filename)
 
         time_elapsed = time() - start_time
@@ -130,7 +132,9 @@ class RBM:
         Args:
             filename - A location to save the image file.
         """
-        print(filename)
+        # print(filename)
+        plt.imshow(self.reconstructed[0].reshape((28,28)), cmap='gray', aspect='equal', interpolation='none')
+        plt.savefig(filename)
         return
 
 
