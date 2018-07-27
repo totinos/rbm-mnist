@@ -1,9 +1,21 @@
-#from pylab import *
+#!/usr/bin/python
+
+###########################################################################
+#                                                                         #
+#  FILENAME    -- mnist.py                                                #
+#                                                                         #
+#  AUTHOR      -- Sam Brown                                               #
+#                                                                         #
+#  DESCRIPTION -- This file implements functions that allow the user to   #
+#                 parse and manipulate the MNIST handwritten digit        #
+#                 dataset.                                                #
+#                                                                         #
+###########################################################################
+
+
 from array import array
 import struct
 import numpy as np
-import os
-
 import matplotlib.pyplot as plt
 
 
@@ -26,6 +38,7 @@ def load_images(num_digits=0, training=True):
         - t10k-labels-idx1-ubyte
     """
 
+    # Determine the set of binary data files to parse
     if training == True:
         ubytes = 'images/train-images-idx3-ubyte'
         labels = 'images/train-labels-idx1-ubyte'
@@ -33,30 +46,32 @@ def load_images(num_digits=0, training=True):
         ubytes = 'images/t10k-images-idx3-ubyte'
         labels = 'images/t10k-labels-idx1-ubyte'
 
+    # Unpack the binary image data and store it in a numpy array
+    # Normalize the data to the interval [0,1)
     with open(ubytes, 'rb') as f:
+        print('Unpacking binary image data...')
         magic_number, num_images, rows, cols = struct.unpack('>iiii', f.read(16))
-
         if (num_digits == 0 or num_digits > num_images):
             num_digits = num_images
-
         pixels = int(rows * cols)
         data = array('B', f.read(int(pixels * num_digits)))
         images = np.zeros((num_digits, pixels), dtype=np.uint8)
-
         for i in range(num_digits):
             start = int(i * pixels)
             end = int((i+1) * pixels)
             images[i] = np.array(data[start:end])
-
         images = np.true_divide(images, 255)
+        print('Done!')
 
+    # Unpack the binary label data and store it in a numpy array
     with open(labels, 'rb') as f:
+        print('Unpacking binary label data...')
         magic_number, num_labels = struct.unpack('>ii', f.read(8))
         data = array('B', f.read(int(num_digits)))
         labels = np.array(data, dtype=np.uint8)
+        print('Done!')
 
     return images, labels
-
 
 
 
@@ -80,7 +95,6 @@ def get_instances(digit, images, labels):
 
 
 
-
 def exclude_instances(digit, images, labels):
     """Get an array of images of all digits excepting the one specified.
 
@@ -95,7 +109,6 @@ def exclude_instances(digit, images, labels):
         if labels[i] != digit:
             indices.append(i)
     return images[indices]
-
 
 
 
@@ -119,7 +132,7 @@ if __name__ == '__main__':
     images, labels = load_images(10, True)
     print('Shape of images array: ', images.shape)
 
-    twos = filter_dataset(2, images, labels)
+    twos = get_instances(2, images, labels)
     print('Shape of twos array: ', twos.shape)
 
     save_image(twos[0], 'fig.png')

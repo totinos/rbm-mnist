@@ -1,10 +1,22 @@
+#!/usr/bin/python
+
+###########################################################################
+#                                                                         #
+#  FILENAME    -- rbm3.py                                                 #
+#                                                                         #
+#  AUTHOR      -- Sam Brown                                               #
+#                                                                         #
+#  DESCRIPTION -- This file implements functions that allow the user to   #
+#                 create and train a Restricted Boltzmann Machine using   #
+#                 any dataset.                                            #
+#                                                                         #
+###########################################################################
+
+
 import numpy as np
 import os
 import sys
 import mnist
-
-import random
-
 from time import time
 import matplotlib.pyplot as plt
 
@@ -62,21 +74,10 @@ class RBM:
         num_examples = dataset.shape[0]
         num_batches = num_examples // batch_size
 
-
-        # print(num_examples)
-        # reconstruction_indices = np.random.random_integers(num_examples, size=(16, 1))
-        # reconstruction_indices.sort(axis=0)
-        # print(reconstruction_indices)
-
-        # reconstruction_indices = random.sample(range(1, num_examples), 16)
-        # reconstruction_indices.sort()
-        # print(reconstruction_indices)
-
         self.reconstructed = None
         self.reconstructed = np.zeros((num_batches, self.num_visible))
-        # print(num_batches)
 
-
+        # Train the RBM over given # of epochs using Contrastive Divergence
         start_time = time()
         for epoch in range(max_epochs):
             error = 0
@@ -124,7 +125,7 @@ class RBM:
                 if not os.path.exists('reconstructed'):
                     os.makedirs('reconstructed')
                 filename = 'reconstructed/{:04}.png'.format(epoch)
-                self.save_reconstructed_image(filename)
+                self.save_reconstructed_images(filename, 28, 28)
 
         time_elapsed = time() - start_time
         print('Training completed.')
@@ -152,7 +153,7 @@ class RBM:
         Args:
             filename - A location to save the image file.
         """
-        print(filename)
+        # print(filename)
         num_images = self.reconstructed.shape[0]
         images = np.zeros((rows, cols*num_images))
         for i in range(num_images):
