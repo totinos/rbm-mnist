@@ -30,7 +30,7 @@ class RBM:
         """Initializes an RBM with the given dimensions.
 
         Args:
-            dataset - A numpy array of dim. [num_examples] x [num_inputs].
+            num_visible - The number of visible neurons int the RBM implementation.
             num_hidden - The number of hidden neurons in the RBM implementation.
             act_func - The type of activation function the RBM should use.
         """
@@ -51,7 +51,10 @@ class RBM:
         self.v_inc = np.zeros((1, num_visible))
         self.h_inc = np.zeros((1, num_hidden))
 
-        self.act_func = self.lookup if act_func == 'lookup' else self.logistic
+        if act_func == 'chaotic':
+            self.act_func = self.chaotic_logistic
+        else:
+            self.act_func = self.logistic
 
         print('Done!')
         return
@@ -66,6 +69,7 @@ class RBM:
         implementation.
 
         Args:
+            dataset - A numpy array of dim. [num_examples] x [num_inputs].
             learning_rate - Used when updating weights (ref. Geoff Hinton).
             max_epochs - The number of epochs to train the RBM network.
             batch_size - The number of training examples per batch.
@@ -89,6 +93,9 @@ class RBM:
 
                 ############# POSITIVE #############
                 pos_hid_probs = self.act_func(data, self.weights, self.h_bias)
+
+                exit()
+
                 rand_states = np.random.rand(batch_size, self.num_hidden)
                 pos_hid_states = pos_hid_probs > rand_states
                 pos_prods = np.dot(data.T, pos_hid_probs)
@@ -135,15 +142,64 @@ class RBM:
 
 
     def logistic(self, data, weights, biases):
-        """Logistic activation function"""
+        """A standard logistic activation function.
+
+        Args:
+            data - A numpy array of dim. [batch_size] x [num_inputs].
+            weights - A numpy array of dim. [num_visible] x [num_hidden].
+            biases - A numpy array of dim. [1] x [num_visible OR num_hidden].
+
+        Returns:
+            activations - A numpy array of dim. [batch_size] x [num_visible OR num_hidden].
+        """
+
         state_weight_prods = np.dot(data, weights)
-        # replicated_bias = np.tile(biases, (data.shape[0], 1))
-        return 1.0 / (1 + np.exp(- state_weight_prods - biases))
+        print(-state_weight_prods - biases)
+        activations = 1.0 / (1 + np.exp(-state_weight_prods - biases))
+        plt.plot(state_weight_prods, activations)
+        plt.show()
+        return activations
 
-    def lookup(self, data, weights, biases):
-        """Stochastic neuron activation function lookup table."""
-        return
 
+
+    def logistic_no_bias(self, data, weights, biases):
+        """A standard logistic activation function (without biases utilized).
+
+        Args:
+            data - A numpy array of dim. [batch_size] x [num_inputs].
+            weights - A numpy array of dim. [num_visible] x [num_hidden].
+            biases - A numpy array of dim. [1] x [num_visible OR num_hidden].
+
+        Returns:
+            activations - A numpy array of dim. [batch_size] x [num_visible OR num_hidden].
+        """
+
+        state_weight_prods = np.dot(data, weights)
+        activations = 1.0 / (1 + np.exp(-state_weight_prods))
+        #plt.plot(state_weight_prods, activations)
+        #plt.show()
+        return activations
+
+
+
+    def chaotic_logistic(self, data, weights, biases):
+        """Stochastic neuron activation function lookup table.
+
+        Args:
+            data - A numpy array of dim. [batch_size] x [num_inputs].
+            weights - A numpy array of dim. [num_visible] x [num_hidden].
+            biases - A numpy array of dim. [1] x [num_visible OR num_hidden].
+
+        Returns:
+            activations - A numpy array of dim. [batch_size] x [num_visible OR num_hidden].
+        """
+
+        state_weight_prods = np.dot(data, weights)
+        # for x in np.nditer(state_weight_prods):
+        #     if x < -4:
+        #         x = 0
+        #     elif x < 
+        # return
 
 
 
